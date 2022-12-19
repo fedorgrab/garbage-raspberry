@@ -26,7 +26,7 @@ def camera_on_action(images) -> str:
         time.sleep(5)
         servo.close_door(bin_door)
         
-       return predicted_class
+    return predicted_class
 
 
 def camera_stream() -> None:
