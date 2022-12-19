@@ -12,7 +12,7 @@ import servo
 import hardware
 
 
-def camera_on_action(images):
+def camera_on_action(images) -> str:
     predicted_class = server.send_images_and_predict(images)
 
     if predicted_class == "other":
@@ -25,6 +25,8 @@ def camera_on_action(images):
         servo.open_door(bin_door)
         time.sleep(5)
         servo.close_door(bin_door)
+        
+       return predicted_class
 
 
 def camera_stream() -> None:
@@ -37,6 +39,7 @@ def camera_stream() -> None:
     print("Start")
     on_camera_images = []
     object_is_close = False
+    start_time = None
 
     for frame in hardware.camera.capture_continuous(
         raw_capture, "bgr", use_video_port=True
@@ -55,6 +58,7 @@ def camera_stream() -> None:
         if abs(hash_diff) > 3 or object_is_close:
             if k == 0:
                 print("Scanning Object")
+                start_time = time.time()
                 led.led_on()
                 time.sleep(0.6)
                 object_is_close = True
@@ -62,11 +66,12 @@ def camera_stream() -> None:
                 on_camera_images.append(img)
             elif k >= constants.NUMBER_OF_IMAGES_TO_PROCESS:
                 led.led_off()
-                camera_on_action(on_camera_images)
+                predicted_class = camera_on_action(on_camera_images)
                 prev_image = None
                 object_is_close = False
                 on_camera_images = []
                 k = 0
+                print(f"=== Finished Processing: {time.time() - start_time} s. Predicted class: {predicted_class}")
                 continue
 
             k += 1
