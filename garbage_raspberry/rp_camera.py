@@ -12,9 +12,9 @@ import servo
 import hardware
 
 
-def camera_on_action(images) -> str:
+def camera_on_action(images, start_time) -> str:
     predicted_class = server.send_images_and_predict(images)
-
+    print(f"=== Finished Processing: {str(time.time() - start_time)[:6]} s. Predicted class: {predicted_class}")
     if predicted_class == "other":
         led.blink()
     elif predicted_class == "service_gesture":
@@ -66,12 +66,11 @@ def camera_stream() -> None:
                 on_camera_images.append(img)
             elif k >= constants.NUMBER_OF_IMAGES_TO_PROCESS:
                 led.led_off()
-                predicted_class = camera_on_action(on_camera_images)
+                predicted_class = camera_on_action(on_camera_images, start_time=start_time)
                 prev_image = None
                 object_is_close = False
                 on_camera_images = []
                 k = 0
-                print(f"=== Finished Processing: {time.time() - start_time} s. Predicted class: {predicted_class}")
                 continue
 
             k += 1
