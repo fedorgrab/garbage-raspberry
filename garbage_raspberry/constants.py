@@ -16,4 +16,4 @@ CLASS_TO_BIN_MAP = {
 
 
 CLASSES = ["cardboard", "glass", "metal", "paper", "plastic", "trash"]
-NUMBER_OF_IMAGES_TO_PROCESS = 2
+NUMBER_OF_IMAGES_TO_PROCESS = 4
