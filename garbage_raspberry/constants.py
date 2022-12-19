@@ -1,4 +1,4 @@
-SERVER_URL = "http://34.121.25.48/predict"
+SERVER_URL = "https://tf-model-server-uei6gbnjha-uk.a.run.app/predict"
 IMG_SIZE = (320, 320)
 TRASH = 0
 RECYCLE = 1
