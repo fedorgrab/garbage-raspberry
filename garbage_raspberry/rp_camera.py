@@ -44,13 +44,23 @@ def camera_stream() -> None:
     for frame in hardware.camera.capture_continuous(
         raw_capture, "bgr", use_video_port=True
     ):
-        img = Image.fromarray(frame.array)
+        img_arr = frame.array
+        img = Image.fromarray(img_arr)
         raw_capture.truncate(0)
+
+        if img_arr.mean() < 10:
+            print("Black Image")
+            prev_image = None
+            object_is_close = False
+            on_camera_images = []
+            k = 0
+            continue
+
 
         if prev_image is None:
             prev_image = img
             continue
-
+        
         prev_image_hash = imagehash.average_hash(prev_image)
         curr_image_hash = imagehash.average_hash(img)
         hash_diff = prev_image_hash - curr_image_hash
