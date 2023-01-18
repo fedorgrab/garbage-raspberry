@@ -1,5 +1,6 @@
-import typing as t
 import io
+import typing as t
+
 import requests
 
 import constants

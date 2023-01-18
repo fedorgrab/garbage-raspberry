@@ -1,20 +1,23 @@
-import typing as t
-import time
 import io
-from PIL import Image
-from picamera.array import PiRGBArray
+import time
+import typing as t
+
 import imagehash
+from picamera.array import PiRGBArray
+from PIL import Image
 
 import constants
-import server
-import led
-import servo
 import hardware
+import led
+import server
+import servo
 
 
 def camera_on_action(images, start_time) -> str:
     predicted_class = server.send_images_and_predict(images)
-    print(f"=== Finished Processing: {str(time.time() - start_time)[:6]} s. Predicted class: {predicted_class}")
+    print(
+        f"=== Finished Processing: {str(time.time() - start_time)[:6]} s. Predicted class: {predicted_class}"
+    )
     if predicted_class == "other":
         led.blink()
     elif predicted_class == "service_gesture":
@@ -25,7 +28,7 @@ def camera_on_action(images, start_time) -> str:
         servo.open_door(bin_door)
         time.sleep(5)
         servo.close_door(bin_door)
-        
+
     return predicted_class
 
 
@@ -37,6 +40,7 @@ def camera_stream() -> None:
     prev_image = None
 
     print("Start")
+    led.start_blink()
     on_camera_images = []
     object_is_close = False
     start_time = None
@@ -56,11 +60,10 @@ def camera_stream() -> None:
             k = 0
             continue
 
-
         if prev_image is None:
             prev_image = img
             continue
-        
+
         prev_image_hash = imagehash.average_hash(prev_image)
         curr_image_hash = imagehash.average_hash(img)
         hash_diff = prev_image_hash - curr_image_hash
@@ -76,7 +79,9 @@ def camera_stream() -> None:
                 on_camera_images.append(img)
             elif k >= constants.NUMBER_OF_IMAGES_TO_PROCESS:
                 led.led_off()
-                predicted_class = camera_on_action(on_camera_images, start_time=start_time)
+                predicted_class = camera_on_action(
+                    on_camera_images, start_time=start_time
+                )
                 prev_image = None
                 object_is_close = False
                 on_camera_images = []
